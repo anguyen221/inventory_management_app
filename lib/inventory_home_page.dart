@@ -34,11 +34,22 @@ class _InventoryHomePageState extends State<InventoryHomePage> {
               return ListTile(
                 title: Text(data['name'] ?? 'Unnamed Item'),
                 subtitle: Text('Quantity: ${data['quantity'] ?? 0}'),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    _deleteItem(doc.id);
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        _showUpdateItemDialog(doc.id, data);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        _deleteItem(doc.id);
+                      },
+                    ),
+                  ],
                 ),
               );
             }).toList(),
@@ -92,6 +103,57 @@ class _InventoryHomePageState extends State<InventoryHomePage> {
                 }
               },
               child: Text('Add'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showUpdateItemDialog(String itemId, Map<String, dynamic> itemData) {
+    final nameController = TextEditingController(text: itemData['name']);
+    final quantityController = TextEditingController(text: itemData['quantity'].toString());
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Update Inventory Item'),
+          content: Column(
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Item Name'),
+              ),
+              TextField(
+                controller: quantityController,
+                decoration: InputDecoration(labelText: 'Quantity'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                final name = nameController.text.trim();
+                final quantity = int.tryParse(quantityController.text) ?? 0;
+
+                if (name.isNotEmpty) {
+                  itemsCollection.doc(itemId).update({
+                    'name': name,
+                    'quantity': quantity,
+                  });
+
+                  Navigator.pop(context);
+                }
+              },
+              child: Text('Update'),
             ),
             TextButton(
               onPressed: () {

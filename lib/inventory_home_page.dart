@@ -34,6 +34,12 @@ class _InventoryHomePageState extends State<InventoryHomePage> {
               return ListTile(
                 title: Text(data['name'] ?? 'Unnamed Item'),
                 subtitle: Text('Quantity: ${data['quantity'] ?? 0}'),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    _deleteItem(doc.id);
+                  },
+                ),
               );
             }).toList(),
           );
@@ -97,5 +103,9 @@ class _InventoryHomePageState extends State<InventoryHomePage> {
         );
       },
     );
+  }
+
+  void _deleteItem(String itemId) {
+    itemsCollection.doc(itemId).delete();
   }
 }

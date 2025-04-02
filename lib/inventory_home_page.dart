@@ -39,6 +39,63 @@ class _InventoryHomePageState extends State<InventoryHomePage> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddItemDialog();
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showAddItemDialog() {
+    final nameController = TextEditingController();
+    final quantityController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add Inventory Item'),
+          content: Column(
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Item Name'),
+              ),
+              TextField(
+                controller: quantityController,
+                decoration: InputDecoration(labelText: 'Quantity'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                final name = nameController.text.trim();
+                final quantity = int.tryParse(quantityController.text) ?? 0;
+
+                if (name.isNotEmpty) {
+                  itemsCollection.add({
+                    'name': name,
+                    'quantity': quantity,
+                  });
+
+                  Navigator.pop(context);
+                }
+              },
+              child: Text('Add'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
